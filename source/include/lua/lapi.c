@@ -58,12 +58,12 @@ const char lua_ident[] =
 
 
 static TValue *index2addr (lua_State *L, int idx) {
-  CallInfo *ci = L->ci;
+  CallInfo *ci = (CallInfo *)L->ci;
   if (idx > 0) {
-    TValue *o = ci->func + idx;
+    TValue *ptrTValue = (TValue *)(ci->func + idx);
     api_check(idx <= ci->top - (ci->func + 1), "unacceptable index");
-    if (o >= L->top) return NONVALIDVALUE;
-    else return o;
+    if (ptrTValue >= L->top) return NONVALIDVALUE;
+    else return ptrTValue;
   }
   else if (!ispseudo(idx)) {  /* negative index */
     api_check(idx != 0 && -idx <= L->top - (ci->func + 1), "invalid index");
@@ -77,7 +77,7 @@ static TValue *index2addr (lua_State *L, int idx) {
     if (ttislcf(ci->func))  /* light C function? */
       return NONVALIDVALUE;  /* it has no upvalues */
     else {
-      CClosure *func = clCvalue(ci->func);
+      CClosure *func = (CClosure *)clCvalue(ci->func);
       return (idx <= func->nupvalues) ? &func->upvalue[idx-1] : NONVALIDVALUE;
     }
   }
@@ -96,7 +96,7 @@ static void growstack (lua_State *L, void *ud) {
 
 LUA_API int lua_checkstack (lua_State *L, int n) {
   int res;
-  CallInfo *ci = L->ci;
+  CallInfo *ci = (CallInfo *)L->ci;
   lua_lock(L);
   api_check(n >= 0, "negative 'n'");
   if (L->stack_last - L->top > n)  /* stack large enough? */
@@ -117,6 +117,7 @@ LUA_API int lua_checkstack (lua_State *L, int n) {
 
 LUA_API void lua_xmove (lua_State *from, lua_State *to, int n) {
   int i;
+  if((from) && (to)){
   if (from == to) return;
   lua_lock(to);
   api_checknelems(from, n);
@@ -127,6 +128,8 @@ LUA_API void lua_xmove (lua_State *from, lua_State *to, int n) {
     setobj2s(to, to->top++, from->top + i);
   }
   lua_unlock(to);
+  }
+  api_check(from == to, "Invalid Pointers ");
 }
 
 
@@ -169,7 +172,7 @@ LUA_API int lua_gettop (lua_State *L) {
 
 
 LUA_API void lua_settop (lua_State *L, int idx) {
-  StkId func = L->ci->func;
+  StkId func =(StkId) L->ci->func;
   lua_lock(L);
   if (idx >= 0) {
     api_check(idx <= L->stack_last - (func + 1), "new top too large");
@@ -192,10 +195,12 @@ LUA_API void lua_settop (lua_State *L, int idx) {
 static void reverse (lua_State *L, StkId from, StkId to) {
   for (; from < to; from++, to--) {
     TValue temp;
+    if(L){
     setobj(L, &temp, from);
     setobjs2s(L, from, to);
     setobj2s(L, to, &temp);
   }
+  return;
 }
 
 
@@ -205,8 +210,9 @@ static void reverse (lua_State *L, StkId from, StkId to) {
 */
 LUA_API void lua_rotate (lua_State *L, int idx, int n) {
   StkId p, t, m;
+  if(L){
   lua_lock(L);
-  t = L->top - 1;  /* end of stack segment being rotated */
+  t = (StkId)L->top - 1;  /* end of stack segment being rotated */
   p = index2addr(L, idx);  /* start of segment */
   api_checkstackindex(idx, p);
   api_check((n >= 0 ? n : -n) <= (t - p + 1), "invalid 'n'");
@@ -215,21 +221,29 @@ LUA_API void lua_rotate (lua_State *L, int idx, int n) {
   reverse(L, m + 1, t);  /* reverse the suffix */
   reverse(L, p, t);  /* reverse the entire segment */
   lua_unlock(L);
+  }
+  return;
 }
 
 
 LUA_API void lua_copy (lua_State *L, int fromidx, int toidx) {
   TValue *fr, *to;
+  if((fr)&&(to)){
   lua_lock(L);
   fr = index2addr(L, fromidx);
   to = index2addr(L, toidx);
   api_checkvalidindex(to);
+  if((fr) && (to)){
   setobj(L, to, fr);
   if (isupvalue(toidx))  /* function upvalue? */
     luaC_barrier(L, clCvalue(L->ci->func), fr);
   /* LUA_REGISTRYINDEX does not need gc barrier
      (collector revisits it before finishing collection) */
   lua_unlock(L);
+  }
+  return;
+}
+return;
 }
 
 
