@@ -38,18 +38,10 @@
 #include <psp2/io/fcntl.h>
 #include <vita2d.h>
 #include "include/luaplayer.h"
-extern "C"{
-	#include "include/draw/font.h"
-}
+#include "include/draw/font.h"
 
-struct ttf{
-	uint32_t magic;
-	vita2d_font* f;
-	int size;
-};
-
-
-static int lua_print(lua_State *L)
+namespace LuaLppVita{
+static int LuaScreen::lua_print(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 4) return luaL_error(L, "wrong number of arguments.");
@@ -61,7 +53,7 @@ static int lua_print(lua_State *L)
 	return 0;
 }
 
-static int lua_pixel(lua_State *L)
+static int LuaScreen::lua_pixel(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 3) return luaL_error(L, "wrong number of arguments.");
@@ -72,7 +64,7 @@ static int lua_pixel(lua_State *L)
 	return 0;
 }
 
-static int lua_rect(lua_State *L)
+static int LuaScreen::lua_rect(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 5) return luaL_error(L, "wrong number of arguments.");
@@ -85,7 +77,7 @@ static int lua_rect(lua_State *L)
 	return 0;
 }
 
-static int lua_line(lua_State *L)
+static int LuaScreen::lua_line(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 5) return luaL_error(L, "wrong number of arguments.");
@@ -98,7 +90,7 @@ static int lua_line(lua_State *L)
 	return 0;
 }
 
-static int lua_circle(lua_State *L)
+static int LuaScreen::lua_circle(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 4) return luaL_error(L, "wrong number of arguments.");
@@ -110,7 +102,7 @@ static int lua_circle(lua_State *L)
 	return 0;
 }
 
-static int lua_flip(lua_State *L)
+static int LuaScreen::lua_flip(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 0) return luaL_error(L, "wrong number of arguments.");
@@ -118,7 +110,7 @@ static int lua_flip(lua_State *L)
 	return 0;
 }
 
-static int lua_clear(lua_State *L)
+static int LuaScreen::lua_clear(lua_State *L)
 {
     int argc = lua_gettop(L);
     if ((argc != 1) && (argc != 0)) return luaL_error(L, "wrong number of arguments.");
@@ -134,7 +126,7 @@ static int lua_clear(lua_State *L)
 	return 0;
 }
 
-static int lua_color(lua_State *L) {
+static int LuaScreen::lua_color(lua_State *L) {
     int argc = lua_gettop(L);
     if ((argc != 3) && (argc != 4)) return luaL_error(L, "wrong number of arguments");
     int r = luaL_checkinteger(L, 1);
@@ -156,7 +148,7 @@ static int lua_getR(lua_State *L) {
     return 1;
 }
 
-static int lua_getG(lua_State *L) {
+static int LuaScreen::lua_getG(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
     int color = luaL_checkinteger(L, 1);
@@ -165,7 +157,7 @@ static int lua_getG(lua_State *L) {
     return 1;
 }
 
-static int lua_getB(lua_State *L) {
+static int LuaScreen::lua_getB(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
     int color = luaL_checkinteger(L, 1);
@@ -174,7 +166,7 @@ static int lua_getB(lua_State *L) {
     return 1;
 }
 
-static int lua_getA(lua_State *L) {
+static int LuaScreen::lua_getA(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
     int color = luaL_checkinteger(L, 1);
@@ -183,21 +175,21 @@ static int lua_getA(lua_State *L) {
     return 1;
 }
 
-static int lua_init(lua_State *L) {
+static int LuaScreen::lua_init(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 0) return luaL_error(L, "wrong number of arguments");	
     vita2d_start_drawing();
     return 0;
 }
 
-static int lua_term(lua_State *L) {
+static int LuaScreen::lua_term(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 0) return luaL_error(L, "wrong number of arguments");
     vita2d_end_drawing();
     return 0;
 }
 
-static int lua_loadimg(lua_State *L)
+static int LuaScreen::lua_loadimg(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
@@ -223,7 +215,7 @@ static int lua_loadimg(lua_State *L)
 	return 1;
 }
 
-static int lua_drawimg(lua_State *L)
+static int LuaScreen::lua_drawimg(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 3) return luaL_error(L, "wrong number of arguments");
@@ -234,7 +226,7 @@ static int lua_drawimg(lua_State *L)
 	return 0;
 }
 
-static int lua_drawimg_rotate(lua_State *L)
+static int LuaScreen::lua_drawimg_rotate(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 4) return luaL_error(L, "wrong number of arguments");
@@ -246,7 +238,7 @@ static int lua_drawimg_rotate(lua_State *L)
 	return 0;
 }
 
-static int lua_drawimg_scale(lua_State *L)
+static int LuaScreen::lua_drawimg_scale(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 5) return luaL_error(L, "wrong number of arguments");
@@ -259,7 +251,7 @@ static int lua_drawimg_scale(lua_State *L)
 	return 0;
 }
 
-static int lua_drawimg_part(lua_State *L)
+static int LuaScreen::lua_drawimg_part(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 7) return luaL_error(L, "wrong number of arguments");
@@ -274,7 +266,7 @@ static int lua_drawimg_part(lua_State *L)
 	return 0;
 }
 
-static int lua_drawimg_full(lua_State *L)
+static int LuaScreen::lua_drawimg_full(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 9) return luaL_error(L, "wrong number of arguments");
@@ -291,16 +283,20 @@ static int lua_drawimg_full(lua_State *L)
 	return 0;
 }
 
-static int lua_width(lua_State *L)
+static int LuaScreen::lua_width(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
 	vita2d_texture* text = (vita2d_texture*)(luaL_checkinteger(L, 1));
+	try{
 	lua_pushinteger(L, vita2d_texture_get_width(text));
+	}catch(...){
+		
+	}
 	return 1;
 }
 
-static int lua_height(lua_State *L)
+static int LuaScreen::lua_height(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
@@ -309,7 +305,7 @@ static int lua_height(lua_State *L)
 	return 1;
 }
 
-static int lua_free(lua_State *L)
+static int LuaScreen::lua_free(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
@@ -318,7 +314,7 @@ static int lua_free(lua_State *L)
 	return 0;
 }
 
-static int lua_createimage(lua_State *L)
+static int LuaScreen::lua_createimage(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 2) return luaL_error(L, "wrong number of arguments");
@@ -390,51 +386,6 @@ static int lua_fprint(lua_State *L) {
 	vita2d_font_draw_text(font->f, x, y, RGBA8((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF), font->size, text);
     return 0;
 }
-
-//Register our Color Functions
-static const luaL_Reg Color_functions[] = {
-  {"new",                				lua_color},
-  {"getR",								lua_getR},
-  {"getG",								lua_getG},
-  {"getB",								lua_getB},
-  {"getA",								lua_getA},
-  {0, 0}
-};
-
-//Register our Screen Functions
-static const luaL_Reg Screen_functions[] = {
-  {"initBlend",							lua_init},
-  {"termBlend",							lua_term},
-  {"debugPrint",						lua_print},
-  {"drawPixel",							lua_pixel},
-  {"drawLine",							lua_line},
-  {"fillRect",							lua_rect},
-  {"fillCircle",						lua_circle},
-  {"clear",								lua_clear},
-  {"flip",								lua_flip},
-  {"loadImage",							lua_loadimg},
-  {"drawImage",							lua_drawimg},
-  {"drawRotateImage",					lua_drawimg_rotate},
-  {"drawScaleImage",					lua_drawimg_scale},
-  {"drawPartialImage",					lua_drawimg_part},
-  {"drawImageExtended",					lua_drawimg_full},
-  {"createImage",						lua_createimage},
-  {"getImageWidth",						lua_width},
-  {"getImageHeight",					lua_height},
-  {"getFramerate",						lua_getFPS},
-  {"freeImage",							lua_free},
-  {0, 0}
-};
-
-//Register our Font Functions
-static const luaL_Reg Font_functions[] = {
-  {"load",					lua_loadFont}, 
-  {"print",					lua_fprint}, 
-  {"setPixelSizes",			lua_fsize}, 
-  {"unload",				lua_unloadFont}, 
-  {0, 0}
-};
-
 void luaScreen_init(lua_State *L) {
 	lua_newtable(L);
 	luaL_setfuncs(L, Screen_functions, 0);
@@ -446,3 +397,4 @@ void luaScreen_init(lua_State *L) {
 	luaL_setfuncs(L, Color_functions, 0);
 	lua_setglobal(L, "Color");
 }
+}//namespace
