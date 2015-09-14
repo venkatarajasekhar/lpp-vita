@@ -325,7 +325,7 @@ static int LuaScreen::lua_createimage(lua_State *L)
 	return 1;
 }
 
-static int lua_getFPS(lua_State *L)
+static int LuaScreen::lua_getFPS(lua_State *L)
 {
     int argc = lua_gettop(L);
     if (argc != 0) return luaL_error(L, "wrong number of arguments");
@@ -335,7 +335,7 @@ static int lua_getFPS(lua_State *L)
 	return 1;
 }
 
-static int lua_loadFont(lua_State *L) {
+static int LuaScreen::lua_loadFont(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
 	char* text = (char*)(luaL_checkstring(L, 1));
@@ -347,7 +347,7 @@ static int lua_loadFont(lua_State *L) {
     return 1;
 }
 
-static int lua_fsize(lua_State *L) {
+static int LuaScreen::lua_fsize(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 2) return luaL_error(L, "wrong number of arguments");
 	ttf* font = (ttf*)(luaL_checkinteger(L, 1));
@@ -359,7 +359,7 @@ static int lua_fsize(lua_State *L) {
     return 0;
 }
 
-static int lua_unloadFont(lua_State *L) {
+static int LuaScreen::lua_unloadFont(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 1) return luaL_error(L, "wrong number of arguments");
 	ttf* font = (ttf*)(luaL_checkinteger(L, 1));
@@ -371,7 +371,7 @@ static int lua_unloadFont(lua_State *L) {
     return 0;
 }
 
-static int lua_fprint(lua_State *L) {
+static int LuaScreen::lua_fprint(lua_State *L) {
     int argc = lua_gettop(L);
     if (argc != 6) return luaL_error(L, "wrong number of arguments");
 	ttf* font = (ttf*)(luaL_checkinteger(L, 1));
@@ -386,7 +386,7 @@ static int lua_fprint(lua_State *L) {
 	vita2d_font_draw_text(font->f, x, y, RGBA8((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF), font->size, text);
     return 0;
 }
-void luaScreen_init(lua_State *L) {
+void LuaScreen::luaScreen_init(lua_State *L) {
 	lua_newtable(L);
 	luaL_setfuncs(L, Screen_functions, 0);
 	lua_setglobal(L, "Screen");
